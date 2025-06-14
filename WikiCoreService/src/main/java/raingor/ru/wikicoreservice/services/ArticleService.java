@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import raingor.ru.wikicoreservice.domain.Article;
 import raingor.ru.wikicoreservice.dto.CreateArticleDTO;
-import raingor.ru.wikicoreservice.dto.RequestArticleDTO;
+import raingor.ru.wikicoreservice.dto.ResponseArticleDTO;
 import raingor.ru.wikicoreservice.exceptions.ArticleNotFoundException;
 import raingor.ru.wikicoreservice.mappers.ArticleMapper;
 import raingor.ru.wikicoreservice.repositories.ArticleRepository;
@@ -22,7 +22,7 @@ public class ArticleService {
     private final ArticleMapper articleMapper;
 
     // добавим в будущем проверку на удаленность статьи и если она удалено "софтом" то смотрим права
-    public RequestArticleDTO getArticleById(Long id) {
+    public ResponseArticleDTO getArticleById(Long id) {
         Article foundedPage = articleRepository.findById(id)
                 .orElseThrow(ArticleNotFoundException::new);
 
@@ -30,7 +30,7 @@ public class ArticleService {
     }
 
     // изменим findAll без поиска "удаленных"
-    public List<RequestArticleDTO> getAllArticles(Pageable pageRequest) {
+    public List<ResponseArticleDTO> getAllArticles(Pageable pageRequest) {
         if (pageRequest.isUnpaged()) {
             return null;
         }

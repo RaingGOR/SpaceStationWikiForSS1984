@@ -36,7 +36,6 @@ public class Article extends Auditable {
 
     public Article(Long author_id, String title,
                    String content, Format format) {
-
         super(OffsetDateTime.now(), null, null);
         this.author_id = author_id;
         this.title = title;

@@ -5,14 +5,14 @@ import org.springframework.stereotype.Component;
 import raingor.ru.wikicoreservice.domain.Article;
 import raingor.ru.wikicoreservice.domain.Format;
 import raingor.ru.wikicoreservice.dto.CreateArticleDTO;
-import raingor.ru.wikicoreservice.dto.RequestArticleDTO;
+import raingor.ru.wikicoreservice.dto.ResponseArticleDTO;
 
 import java.util.List;
 
 @Component
 public class ArticleMapper {
-    public RequestArticleDTO toRequestArticleDTO(Article article) {
-        return new RequestArticleDTO(
+    public ResponseArticleDTO toRequestArticleDTO(Article article) {
+        return new ResponseArticleDTO(
                 article.getId(),
                 article.getAuthor_id(),
                 article.getTitle(),
@@ -21,7 +21,7 @@ public class ArticleMapper {
         );
     }
 
-    public List<RequestArticleDTO> toRequestArticleDTO(List<Article> articles) {
+    public List<ResponseArticleDTO> toRequestArticleDTO(List<Article> articles) {
         return articles.stream()
                 .map(this::toRequestArticleDTO)
                 .toList();

@@ -1,6 +1,6 @@
 package raingor.ru.wikicoreservice.dto;
 
-public record RequestArticleDTO(
+public record ResponseArticleDTO(
         Long id,
         Long author_id, //dalee zamenim na userDto
         String title,
