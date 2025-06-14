@@ -31,7 +31,7 @@ public class ArticleService {
 
     // изменим findAll без поиска "удаленных"
     public List<RequestArticleDTO> getAllArticles(Pageable pageRequest) {
-        if (pageRequest == null) {
+        if (pageRequest.isUnpaged()) {
             return null;
         }
         List<Article> articles = articleRepository.findAll(pageRequest).getContent();

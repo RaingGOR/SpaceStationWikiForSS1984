@@ -15,6 +15,5 @@ spring:
     baseline-on-migrate: true
     baseline-description: "init"
     locations: classpath:db/migration
-    default-schema: flyway_schema
 server:
   port: 8080

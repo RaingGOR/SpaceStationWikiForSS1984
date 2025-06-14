@@ -14,7 +14,7 @@ import java.time.OffsetDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "articles", schema = "core")
+@Table(name = "articles", schema = "public")
 public class Article extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,5 +42,6 @@ public class Article extends Auditable {
         this.title = title;
         this.content = content;
         this.format = format;
+        this.deleted = false;
     }
 }
