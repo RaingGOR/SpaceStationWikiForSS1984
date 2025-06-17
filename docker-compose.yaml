@@ -1,50 +1,47 @@
 services:
   user_service:
+    container_name: user_service
     build:
       context: .
       dockerfile: ./UserService/Dockerfile
-    container_name: user_service
-    ports:
-      - "8080:8080"
     environment:
       - 'DB_USERNAME=admin'
       - 'DB_PASSWORD=admin'
       - 'DB_URL=jdbc:postgresql://user_db:5432/spaceStationUser'
-      - 'PORT=8080'
+      - 'PORT=8082'
+      - 'KAFKA_BOOTSTRAP_SERVERS=kafka1:29092,kafka2:29093'
+    ports:
+      - "8082:8082"
     depends_on:
-      user_db:
-        condition: service_healthy
+      - user_db
+      - kafka-ui
 
   user_db:
-    image: postgres:15
     container_name: user_db
+    image: postgres:15
     environment:
       - 'POSTGRES_DB=spaceStationUser'
       - 'POSTGRES_USER=admin'
       - 'POSTGRES_PASSWORD=admin'
     ports:
       - "5432:5432"
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U admin" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   wiki_core_service:
+    container_name: wiki_core_service
     build:
       context: .
       dockerfile: ./WikiCoreService/Dockerfile
-    container_name: wiki_core_service
-    ports:
-      - "8081:8081"
     environment:
       - 'DB_USERNAME=admin'
       - 'DB_PASSWORD=admin'
       - 'DB_URL=jdbc:postgresql://article_db:5432/spaceStationArticle'
       - 'PORT=8081'
+      - 'KAFKA_BOOTSTRAP_SERVERS=kafka1:29092,kafka2:29093'
+    ports:
+      - "8081:8081"
     depends_on:
-      article_db:
-        condition: service_healthy
+      - article_db
+      - kafka-ui
 
   article_db:
     image: postgres:15
@@ -55,9 +52,56 @@ services:
       - 'POSTGRES_PASSWORD=admin'
     ports:
       - "5431:5432"
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U admin" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.3.3
+    environment:
+      - 'ZOOKEEPER_CLIENT_PORT=2181'
+      - 'ZOOKEEPER_TICK_TIME=2000'
+    ports:
+      - "22181:2181"
+
+  kafka1:
+    image: confluentinc/cp-kafka:7.3.3
+    environment:
+      - 'KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181'
+      - 'KAFKA_BROKER_ID=1'
+      - 'KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka1:29092'
+      - 'KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT'
+      - 'KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT'
+      - 'KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1'
+    ports:
+      - "29092:29092"
+    depends_on:
+      - zookeeper
+
+  kafka2:
+    image: confluentinc/cp-kafka:7.3.3
+    environment:
+      - 'KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181'
+      - 'KAFKA_BROKER_ID=2'
+      - 'KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka2:29093'
+      - 'KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT'
+      - 'KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT'
+      - 'KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1'
+    ports:
+      - "29093:29093"
+    depends_on:
+      - zookeeper
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    container_name: kafka-ui
+    ports:
+      - 8090:8080
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka1:29092,kafka2:29093
+      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
+    links:
+      - kafka1
+      - kafka2
+      - zookeeper
+    depends_on:
+      - kafka1
+      - kafka2
