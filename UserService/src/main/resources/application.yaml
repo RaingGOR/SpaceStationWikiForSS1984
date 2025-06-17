@@ -1,19 +1,24 @@
 spring:
   application:
     name: UserService
+
   datasource:
-    password: postgres
-    username: postgres
-    url: jdbc:postgresql://localhost:5432/spaceStationUser
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/spaceStationUser}
     driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
       ddl-auto: none
     show-sql: true
+
   flyway:
     enabled: true
     baseline-on-migrate: true
     baseline-description: "init"
     locations: classpath:db/migration
+
 server:
-  port: 8080
+  port: ${PORT:8080}
+

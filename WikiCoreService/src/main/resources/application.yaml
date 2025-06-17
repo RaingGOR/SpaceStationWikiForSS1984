@@ -1,19 +1,23 @@
 spring:
   application:
     name: WikiCoreService
+
   datasource:
-    password: postgres
-    username: postgres
-    url: jdbc:postgresql://localhost:5432/spaceStationCore
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/spaceStationCore}
     driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
       ddl-auto: none
     show-sql: true
+
   flyway:
     enabled: true
     baseline-on-migrate: true
     baseline-description: "init"
     locations: classpath:db/migration
+
 server:
-  port: 8081
+  port: ${PORT:8081}
