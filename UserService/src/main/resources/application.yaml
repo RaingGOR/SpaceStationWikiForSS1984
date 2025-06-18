@@ -16,7 +16,7 @@ spring:
     baseline-description: "init"
     locations: classpath:db/migration
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:kafka1:29092,kafka2:29093}
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:29093,localhost:29095}
     consumer:
       group-id: ${spring.application.name}-group
       auto-offset-reset: earliest
@@ -24,5 +24,5 @@ spring:
       spring.json.trusted.packages: "*"
 
 server:
-  port: ${PORT:8080}
+  port: ${PORT:8082}
 
