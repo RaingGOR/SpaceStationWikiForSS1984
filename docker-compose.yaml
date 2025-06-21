@@ -1,4 +1,5 @@
 services:
+  #User cluster
   user_service:
     container_name: user_service
     build:
@@ -25,7 +26,10 @@ services:
       - 'POSTGRES_PASSWORD=admin'
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data_user:/var/lib/postgresql/data
 
+  #Wiki cluster
   wiki_core_service:
     container_name: wiki_core_service
     build:
@@ -52,7 +56,10 @@ services:
       - 'POSTGRES_PASSWORD=admin'
     ports:
       - "5431:5432"
+    volumes:
+      - postgres_data_article:/var/lib/postgresql/data
 
+  # Kafka cluster
   zookeeper:
     image: confluentinc/cp-zookeeper:7.3.3
     environment:
@@ -113,3 +120,58 @@ services:
     depends_on:
       - kafka1
       - kafka2
+
+  #Auth cluster
+  keycloak_web:
+    image: keycloak/keycloak:latest
+    container_name: keycloak_web
+    environment:
+      - 'KC_DB=postgres'
+      - 'KC_DB_URL=jdbc:postgresql://keycloak_db:5432/keycloak'
+      - 'KC_DB_USERNAME=keycloak'
+      - 'KC_DB_PASSWORD=password'
+
+      - 'KC_HOSTNAME=localhost'
+      - 'KC_HOSTNAME_STRICT=false'
+      - 'KC_HTTP_ENABLED=true'
+      - 'KC_HTTP_PORT=8080'
+
+      - 'KC_LOG_LEVEL=info'
+      - 'KC_METRICS_ENABLED=true'
+      - 'KC_HEALTH_ENABLED=true'
+
+      - 'KC_BOOTSTRAP_ADMIN_USERNAME=admin'
+      - 'KC_BOOTSTRAP_ADMIN_PASSWORD=admin'
+    command: start-dev
+    depends_on:
+      - keycloak_db
+    ports:
+      - "8083:8080"
+
+  keycloak_db:
+    image: postgres:15
+    container_name: keycloak_db
+    volumes:
+      - postgres_data_keycloak:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+    ports:
+      - 5430:5432
+
+  #ApiGateway cluster
+  api_gateway:
+    container_name: api_gateway
+    build:
+      context: .
+      dockerfile: ./ApiGateway/Dockerfile
+    environment:
+      - 'PORT=8084'
+    ports:
+      - "8084:8084"
+
+volumes:
+  postgres_data_keycloak:
+  postgres_data_user:
+  postgres_data_article:

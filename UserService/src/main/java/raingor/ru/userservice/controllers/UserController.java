@@ -6,7 +6,7 @@ import raingor.ru.userservice.dto.ResponseUserDTO;
 import raingor.ru.userservice.services.UserService;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api-user/users")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;

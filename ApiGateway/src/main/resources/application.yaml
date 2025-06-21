@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: ApiGateway
+
+server:
+  port: ${PORT:8084}
+
+# Юзаем пока нету кубера
+services:
+  userServiceUrl: http://localhost:8082
+  wikiServiceUrl: http://localhost:8081
